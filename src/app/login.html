@@ -1,0 +1,79 @@
+<main class="pagina">
+  <section class="tarjeta" aria-labelledby="titulo">
+    <div class="marca">RL</div>
+    <p class="etiqueta">RESERVA DE LABORATORIOS</p>
+
+    @if (auth.usuario(); as usuario) {
+      <h1 id="titulo">¡Bienvenido, {{ usuario.nombre }}!</h1>
+
+      <p role="status">Has iniciado sesión correctamente.</p>
+
+      <div class="datos">
+        <p><strong>Usuario:</strong> {{ usuario.usuarioId }}</p>
+        <p><strong>Rol:</strong> {{ usuario.rol }}</p>
+      </div>
+
+      <button type="button" (click)="salir()">
+        Cerrar sesión
+      </button>
+    } @else {
+      <h1 id="titulo">Iniciar sesión</h1>
+      <p>Ingresa con tu cuenta para gestionar tus reservas.</p>
+
+      <form
+        [formGroup]="formulario"
+        (ngSubmit)="ingresar()"
+      >
+        <label for="correo">Correo electrónico</label>
+        <input
+          id="correo"
+          type="email"
+          formControlName="correo"
+          autocomplete="username"
+          placeholder="nombre@ejemplo.com"
+          maxlength="150"
+          [readOnly]="cargando()"
+          aria-describedby="error-correo"
+        />
+
+        @if (
+          formulario.controls.correo.touched &&
+          formulario.controls.correo.invalid
+        ) {
+          <small id="error-correo" class="error">
+            Ingresa un correo electrónico válido.
+          </small>
+        }
+
+        <label for="password">Contraseña</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          placeholder="Ingresa tu contraseña"
+          maxlength="64"
+          [readOnly]="cargando()"
+          aria-describedby="error-password"
+        />
+
+        @if (
+          formulario.controls.password.touched &&
+          formulario.controls.password.invalid
+        ) {
+          <small id="error-password" class="error">
+            Ingresa tu contraseña.
+          </small>
+        }
+
+        @if (error()) {
+          <p class="aviso" role="alert">{{ error() }}</p>
+        }
+
+        <button type="submit" [disabled]="cargando()">
+          {{ cargando() ? 'Ingresando…' : 'Ingresar' }}
+        </button>
+      </form>
+    }
+  </section>
+</main>

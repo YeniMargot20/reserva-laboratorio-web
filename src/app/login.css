@@ -1,0 +1,134 @@
+:host {
+  display: block;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #172b4d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.pagina {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #eaf1ff, #f7f9fc);
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 440px;
+  padding: 36px;
+  border: 1px solid #dbe4f0;
+  border-radius: 22px;
+  background: white;
+  box-shadow: 0 18px 50px #172b4d12;
+}
+
+.marca {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #2458cf;
+  color: white;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.etiqueta {
+  margin-top: 24px;
+  color: #2458cf;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+h1 {
+  margin: 12px 0;
+  font-size: 30px;
+  overflow-wrap: anywhere;
+}
+
+p {
+  color: #52627a;
+  line-height: 1.6;
+}
+
+form {
+  margin-top: 26px;
+}
+
+label {
+  display: block;
+  margin: 18px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #b9c6d8;
+  border-radius: 10px;
+  font: inherit;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid #88b2ff;
+  outline-offset: 3px;
+}
+
+button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #2458cf;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1946af;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.error {
+  display: block;
+  margin-top: 7px;
+  color: #a52424;
+}
+
+.aviso {
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff0f0;
+  color: #a52424;
+}
+
+.datos {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #f1f5fc;
+}
+
+@media (max-width: 480px) {
+  .pagina {
+    padding: 16px;
+  }
+
+  .tarjeta {
+    padding: 24px;
+  }
+}
