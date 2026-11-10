@@ -1,0 +1,117 @@
+<div class="encabezado">
+  <div>
+    <p class="etiqueta-modulo">MÓDULO 01</p>
+    <h1>Laboratorios y aulas</h1>
+    <p>
+      {{ auth.esAdministrador()
+        ? 'Registra y administra los espacios disponibles para reservar.'
+        : 'Consulta los espacios disponibles y su capacidad.' }}
+    </p>
+  </div>
+</div>
+
+@if (error()) {
+  <p class="mensaje error" role="alert">{{ error() }}</p>
+}
+@if (exito()) {
+  <p class="mensaje exito" role="status">{{ exito() }}</p>
+}
+
+@if (auth.esAdministrador()) {
+  <section class="caja" aria-labelledby="titulo-form-lab">
+    <h2 id="titulo-form-lab">
+      {{ editandoId() ? 'Editar laboratorio' : 'Nuevo laboratorio' }}
+    </h2>
+
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="campo">
+        <label for="lab-nombre">Nombre</label>
+        <input id="lab-nombre" formControlName="nombre" maxlength="100"
+               placeholder="Ej. Laboratorio de Redes" [class.invalido]="invalido('nombre')" />
+        @if (invalido('nombre')) {
+          <small>El nombre es obligatorio.</small>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="lab-ubicacion">Ubicación</label>
+        <input id="lab-ubicacion" formControlName="ubicacion" maxlength="150"
+               placeholder="Ej. Pabellón B - 201" [class.invalido]="invalido('ubicacion')" />
+        @if (invalido('ubicacion')) {
+          <small>La ubicación es obligatoria.</small>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="lab-capacidad">Capacidad (personas)</label>
+        <input id="lab-capacidad" type="number" min="1" max="500" formControlName="capacidad"
+               [class.invalido]="invalido('capacidad')" />
+        @if (invalido('capacidad')) {
+          <small>Ingresa un número entre 1 y 500.</small>
+        }
+      </div>
+
+      <label class="campo casilla" for="lab-activo">
+        <input id="lab-activo" type="checkbox" formControlName="activo" />
+        Disponible para reservas
+      </label>
+
+      <div class="acciones">
+        <button class="boton" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : (editandoId() ? 'Guardar cambios' : 'Registrar') }}
+        </button>
+        @if (editandoId()) {
+          <button class="boton secundario" type="button" (click)="cancelarEdicion()">
+            Cancelar
+          </button>
+        }
+      </div>
+    </form>
+  </section>
+}
+
+<section class="caja" aria-labelledby="titulo-lista-lab">
+  <h2 id="titulo-lista-lab">Listado ({{ laboratorios().length }})</h2>
+
+  <div class="tabla-contenedor">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Ubicación</th>
+          <th>Capacidad</th>
+          <th>Estado</th>
+          @if (auth.esAdministrador()) {
+            <th>Acciones</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @if (cargando()) {
+          <tr><td class="vacio" colspan="5">Cargando…</td></tr>
+        } @else {
+          @for (lab of laboratorios(); track lab.id) {
+            <tr>
+              <td><strong>{{ lab.nombre }}</strong></td>
+              <td>{{ lab.ubicacion }}</td>
+              <td>{{ lab.capacidad }}</td>
+              <td>
+                <span class="estado" [class]="lab.activo ? 'ACTIVO' : 'INACTIVO'">
+                  {{ lab.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              @if (auth.esAdministrador()) {
+                <td class="botones">
+                  <button class="boton secundario chico" type="button" (click)="editar(lab)">Editar</button>
+                  <button class="boton peligro chico" type="button" (click)="eliminar(lab)">Eliminar</button>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr><td class="vacio" colspan="5">Aún no hay laboratorios registrados.</td></tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

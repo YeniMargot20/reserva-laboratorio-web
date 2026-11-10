@@ -1,6 +1,8 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
+
+import { API_URL } from './api';
 
 export interface LoginResponse {
   accessToken: string;
@@ -17,12 +19,15 @@ export class AuthService {
 
   private readonly sesion = signal<LoginResponse | null>(null);
   readonly usuario = this.sesion.asReadonly();
+  readonly esAdministrador = computed(
+    () => this.sesion()?.rol === 'ADMINISTRADOR'
+  );
 
   private vencimiento = 0;
 
   iniciarSesion(correo: string, password: string) {
     return this.http.post<LoginResponse>(
-      'http://localhost:8080/api/auth/login',
+      `${API_URL}/auth/login`,
       { correo: correo.trim(), password }
     ).pipe(
       tap(respuesta => {

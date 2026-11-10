@@ -1,0 +1,29 @@
+<div class="pagina">
+  <header class="cabecera">
+    <a class="marca" routerLink="/inicio" aria-label="ReservaLab, inicio">
+      <span class="logo">RL</span>
+      <span>ReservaLab</span>
+    </a>
+
+    <nav class="menu" aria-label="Menú principal">
+      <a routerLink="/inicio" routerLinkActive="activo">Inicio</a>
+      <a routerLink="/laboratorios" routerLinkActive="activo">Laboratorios</a>
+      <a routerLink="/reservas" routerLinkActive="activo">
+        {{ auth.esAdministrador() ? 'Reservas' : 'Mis reservas' }}
+      </a>
+      @if (auth.esAdministrador()) {
+        <a routerLink="/usuarios" routerLinkActive="activo">Usuarios</a>
+      }
+    </nav>
+
+    <button class="boton-salir" type="button" (click)="salir()">
+      Cerrar sesión
+    </button>
+  </header>
+
+  <main>
+    <router-outlet />
+  </main>
+
+  <footer>Sistema de reserva inteligente de laboratorios y aulas</footer>
+</div>

@@ -1,0 +1,107 @@
+<div class="encabezado">
+  <div>
+    <p class="etiqueta-modulo">MÓDULO 03</p>
+    <h1>Usuarios</h1>
+    <p>Registra solicitantes y administra el estado de sus cuentas.</p>
+  </div>
+</div>
+
+@if (error()) {
+  <p class="mensaje error" role="alert">{{ error() }}</p>
+}
+@if (exito()) {
+  <p class="mensaje exito" role="status">{{ exito() }}</p>
+}
+
+<section class="caja" aria-labelledby="titulo-form-usu">
+  <h2 id="titulo-form-usu">{{ editandoId() ? 'Editar usuario' : 'Nuevo usuario' }}</h2>
+
+  <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+    <div class="campo">
+      <label for="usu-nombre">Nombre completo</label>
+      <input id="usu-nombre" formControlName="nombre" maxlength="100"
+             autocomplete="off" [class.invalido]="invalido('nombre')" />
+      @if (invalido('nombre')) {
+        <small>El nombre es obligatorio.</small>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="usu-correo">Correo electrónico</label>
+      <input id="usu-correo" type="email" formControlName="correo" maxlength="150"
+             autocomplete="off" [class.invalido]="invalido('correo')" />
+      @if (invalido('correo')) {
+        <small>Ingresa un correo válido.</small>
+      }
+    </div>
+
+    @if (!editandoId()) {
+      <div class="campo">
+        <label for="usu-password">Contraseña inicial</label>
+        <input id="usu-password" type="password" formControlName="password" maxlength="64"
+               autocomplete="new-password" [class.invalido]="invalido('password')" />
+        @if (invalido('password')) {
+          <small>Debe tener entre 12 y 64 caracteres.</small>
+        }
+      </div>
+    } @else {
+      <label class="campo casilla" for="usu-activo">
+        <input id="usu-activo" type="checkbox" formControlName="activo" />
+        Cuenta activa
+      </label>
+    }
+
+    <div class="acciones">
+      <button class="boton" type="submit" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando…' : (editandoId() ? 'Guardar cambios' : 'Registrar') }}
+      </button>
+      @if (editandoId()) {
+        <button class="boton secundario" type="button" (click)="cancelarEdicion()">Cancelar</button>
+      }
+    </div>
+  </form>
+</section>
+
+<section class="caja" aria-labelledby="titulo-lista-usu">
+  <h2 id="titulo-lista-usu">Listado ({{ usuarios().length }})</h2>
+
+  <div class="tabla-contenedor">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (cargando()) {
+          <tr><td class="vacio" colspan="5">Cargando…</td></tr>
+        } @else {
+          @for (u of usuarios(); track u.id) {
+            <tr>
+              <td><strong>{{ u.nombre }}</strong>@if (esYo(u)) { (tú)}</td>
+              <td>{{ u.correo }}</td>
+              <td>{{ u.rol === 'ADMINISTRADOR' ? 'Administrador' : 'Solicitante' }}</td>
+              <td>
+                <span class="estado" [class]="u.activo ? 'ACTIVO' : 'INACTIVO'">
+                  {{ u.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="botones">
+                <button class="boton secundario chico" type="button" (click)="editar(u)">Editar</button>
+                @if (!esYo(u)) {
+                  <button class="boton peligro chico" type="button" (click)="eliminar(u)">Eliminar</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr><td class="vacio" colspan="5">No hay usuarios.</td></tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

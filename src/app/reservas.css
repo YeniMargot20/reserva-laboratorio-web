@@ -1,0 +1,80 @@
+.resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.distribucion {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.disponibilidad {
+  padding: 18px;
+  border: 1px solid #e3eaf5;
+  border-radius: 14px;
+  background: #f8faff;
+}
+
+.disponibilidad h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.subtitulo {
+  margin: 14px 0 8px;
+  color: #52627a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ayuda {
+  margin: 0;
+  color: #52627a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.franjas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.franja {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.franja.libre {
+  border: 1px solid #a8dcb9;
+  background: #eaf8ef;
+  color: #1d6b3a;
+  cursor: pointer;
+}
+
+.franja.libre:hover {
+  background: #d4f1de;
+}
+
+.franja.libre:focus-visible {
+  outline: 3px solid #88b2ff;
+  outline-offset: 2px;
+}
+
+.franja.ocupada {
+  border: 1px solid #f1c3c3;
+  background: #fff0f0;
+  color: #a52424;
+}
+
+@media (max-width: 820px) {
+  .distribucion {
+    grid-template-columns: 1fr;
+  }
+}

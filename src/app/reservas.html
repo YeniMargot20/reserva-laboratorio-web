@@ -1,0 +1,224 @@
+<div class="encabezado">
+  <div>
+    <p class="etiqueta-modulo">MÓDULO 02</p>
+    <h1>{{ auth.esAdministrador() ? 'Reservas' : 'Mis reservas' }}</h1>
+    <p>
+      {{ auth.esAdministrador()
+        ? 'Revisa las solicitudes, confírmalas o cancélalas.'
+        : 'Elige un laboratorio y una fecha: te mostramos los horarios libres.' }}
+    </p>
+  </div>
+
+  <div class="resumen" aria-label="Resumen de reservas">
+    <span class="estado PENDIENTE">{{ resumen().pendientes }} pendientes</span>
+    <span class="estado CONFIRMADA">{{ resumen().confirmadas }} confirmadas</span>
+    <span class="estado CANCELADA">{{ resumen().canceladas }} canceladas</span>
+  </div>
+</div>
+
+@if (error()) {
+  <p class="mensaje error" role="alert">{{ error() }}</p>
+}
+@if (exito()) {
+  <p class="mensaje exito" role="status">{{ exito() }}</p>
+}
+
+<section class="caja" aria-labelledby="titulo-form-res">
+  <h2 id="titulo-form-res">{{ editando() ? 'Editar reserva' : 'Nueva reserva' }}</h2>
+
+  <div class="distribucion">
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      @if (auth.esAdministrador()) {
+        <div class="campo">
+          <label for="res-usuario">Solicitante</label>
+          <select id="res-usuario" formControlName="usuarioId" [class.invalido]="invalido('usuarioId')">
+            <option [ngValue]="null" disabled>Selecciona un usuario</option>
+            @for (u of usuariosActivos(); track u.id) {
+              <option [ngValue]="u.id">{{ u.nombre }} ({{ u.correo }})</option>
+            }
+          </select>
+          @if (invalido('usuarioId')) {
+            <small>Selecciona el solicitante.</small>
+          }
+        </div>
+      }
+
+      <div class="campo">
+        <label for="res-lab">Laboratorio o aula</label>
+        <select id="res-lab" formControlName="laboratorioId" [class.invalido]="invalido('laboratorioId')">
+          <option [ngValue]="null" disabled>Selecciona un espacio</option>
+          @for (l of (editando() ? laboratorios() : laboratoriosActivos()); track l.id) {
+            <option [ngValue]="l.id">{{ l.nombre }} · {{ l.capacidad }} personas</option>
+          }
+        </select>
+        @if (invalido('laboratorioId')) {
+          <small>Selecciona un laboratorio.</small>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="res-fecha">Fecha</label>
+        <input id="res-fecha" type="date" formControlName="fecha"
+               [min]="editando() ? null : hoy" [class.invalido]="invalido('fecha')" />
+        @if (invalido('fecha')) {
+          <small>Selecciona la fecha.</small>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="res-inicio">Hora de inicio</label>
+        <input id="res-inicio" type="time" formControlName="horaInicio"
+               [class.invalido]="invalido('horaInicio') || hayCruce()" />
+        @if (invalido('horaInicio')) {
+          <small>Indica la hora de inicio.</small>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="res-fin">Hora de fin</label>
+        <input id="res-fin" type="time" formControlName="horaFin"
+               [class.invalido]="invalido('horaFin') || horarioInvalido() || hayCruce()" />
+        @if (invalido('horaFin')) {
+          <small>Indica la hora de fin.</small>
+        } @else if (horarioInvalido()) {
+          <small>Debe ser posterior a la hora de inicio.</small>
+        }
+      </div>
+
+      @if (editando() && auth.esAdministrador()) {
+        <div class="campo">
+          <label for="res-estado">Estado</label>
+          <select id="res-estado" formControlName="estado">
+            @for (e of estados; track e) {
+              <option [value]="e">{{ e }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <div class="campo ancho">
+        <label for="res-motivo">Motivo</label>
+        <textarea id="res-motivo" formControlName="motivo" maxlength="200"
+                  placeholder="Ej. Práctica calificada de Redes I"
+                  [class.invalido]="invalido('motivo')"></textarea>
+        @if (invalido('motivo')) {
+          <small>Describe el motivo de la reserva.</small>
+        }
+      </div>
+
+      <div class="acciones">
+        <button class="boton" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : (editando() ? 'Guardar cambios' : 'Reservar') }}
+        </button>
+        @if (editando()) {
+          <button class="boton secundario" type="button" (click)="prepararNuevo()">Cancelar edición</button>
+        }
+      </div>
+    </form>
+
+    <aside class="disponibilidad" aria-live="polite">
+      <h3>Disponibilidad</h3>
+
+      @if (!puedeVerDisponibilidad()) {
+        <p class="ayuda">Elige un laboratorio y una fecha para ver los horarios libres.</p>
+      } @else {
+        @if (hayCruce()) {
+          <p class="mensaje error">El horario elegido se cruza con otra reserva.</p>
+        }
+
+        <p class="subtitulo">Horarios libres (toca uno para usarlo)</p>
+        <div class="franjas">
+          @for (f of franjasLibres(); track f.inicio) {
+            <button type="button" class="franja libre" (click)="usarFranja(f)">
+              {{ f.inicio }} – {{ f.fin }}
+            </button>
+          } @empty {
+            <p class="ayuda">No quedan horarios libres este día.</p>
+          }
+        </div>
+
+        <p class="subtitulo">Ocupados</p>
+        <div class="franjas">
+          @for (f of ocupadosVisibles(); track $index) {
+            <span class="franja ocupada">{{ f.inicio }} – {{ f.fin }}</span>
+          } @empty {
+            <p class="ayuda">Sin reservas: todo el día está libre.</p>
+          }
+        </div>
+      }
+    </aside>
+  </div>
+</section>
+
+<section class="caja" aria-labelledby="titulo-lista-res">
+  <h2 id="titulo-lista-res">Listado ({{ reservasFiltradas().length }})</h2>
+
+  <div class="filtros">
+    <div class="campo">
+      <label for="filtro-estado">Estado</label>
+      <select id="filtro-estado" (change)="cambiarFiltroEstado($any($event.target).value)">
+        <option value="">Todos</option>
+        @for (e of estados; track e) {
+          <option [value]="e">{{ e }}</option>
+        }
+      </select>
+    </div>
+    <div class="campo">
+      <label for="filtro-lab">Laboratorio</label>
+      <select id="filtro-lab" (change)="cambiarFiltroLaboratorio($any($event.target).value)">
+        <option value="">Todos</option>
+        @for (l of laboratorios(); track l.id) {
+          <option [value]="l.id">{{ l.nombre }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="tabla-contenedor">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Horario</th>
+          <th>Laboratorio</th>
+          @if (auth.esAdministrador()) {
+            <th>Solicitante</th>
+          }
+          <th>Motivo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (cargando()) {
+          <tr><td class="vacio" colspan="7">Cargando…</td></tr>
+        } @else {
+          @for (r of reservasFiltradas(); track r.id) {
+            <tr>
+              <td>{{ r.fecha }}</td>
+              <td>{{ hora(r.horaInicio) }} – {{ hora(r.horaFin) }}</td>
+              <td>{{ r.laboratorioNombre }}</td>
+              @if (auth.esAdministrador()) {
+                <td>{{ r.usuarioNombre }}</td>
+              }
+              <td>{{ r.motivo }}</td>
+              <td><span class="estado" [class]="r.estado">{{ r.estado }}</span></td>
+              <td class="botones">
+                @if (auth.esAdministrador() && r.estado === 'PENDIENTE') {
+                  <button class="boton chico" type="button" (click)="cambiarEstado(r, 'CONFIRMADA')">Confirmar</button>
+                }
+                @if (auth.esAdministrador() && r.estado !== 'CANCELADA') {
+                  <button class="boton secundario chico" type="button" (click)="cambiarEstado(r, 'CANCELADA')">Cancelar</button>
+                }
+                <button class="boton secundario chico" type="button" (click)="editar(r)">Editar</button>
+                <button class="boton peligro chico" type="button" (click)="eliminar(r)">Eliminar</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td class="vacio" colspan="7">No hay reservas para mostrar.</td></tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

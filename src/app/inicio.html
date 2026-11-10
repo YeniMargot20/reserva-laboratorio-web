@@ -1,97 +1,81 @@
-<div class="pagina">
-  <header class="cabecera">
-    <a class="marca" href="/" aria-label="ReservaLab, inicio">
-      <span class="logo">RL</span>
-      <span>ReservaLab</span>
+@if (auth.usuario(); as usuario) {
+  <section class="bienvenida">
+    <p class="etiqueta">PANEL PRINCIPAL</p>
+
+    <h1>Hola, {{ usuario.nombre }}</h1>
+
+    <p class="descripcion">
+      Organiza tus actividades y gestiona tus reservas
+      de laboratorios y aulas desde un solo lugar.
+    </p>
+
+    <span class="rol">
+      {{ usuario.rol === 'ADMINISTRADOR'
+        ? 'Administrador'
+        : 'Solicitante' }}
+    </span>
+  </section>
+
+  <section class="modulos" aria-label="Módulos del sistema">
+    <a class="tarjeta" routerLink="/laboratorios">
+      <span class="numero">01</span>
+      <h2>Laboratorios</h2>
+      <p>
+        {{ usuario.rol === 'ADMINISTRADOR'
+          ? 'Registra, edita y desactiva laboratorios y aulas.'
+          : 'Consulta los espacios, su ubicación y la capacidad para tus actividades.' }}
+      </p>
     </a>
 
-    <button class="boton-salir" type="button" (click)="salir()">
-      Cerrar sesión
-    </button>
-  </header>
+    <a class="tarjeta" routerLink="/reservas">
+      <span class="numero">02</span>
+      <h2>
+        {{ usuario.rol === 'ADMINISTRADOR'
+          ? 'Reservas'
+          : 'Mis reservas' }}
+      </h2>
+      <p>
+        {{ usuario.rol === 'ADMINISTRADOR'
+          ? 'Revisa las reservas, confirma o cancela solicitudes.'
+          : 'Registra reservas viendo los horarios libres y gestiona las tuyas.' }}
+      </p>
+    </a>
 
-  <main>
-    @if (auth.usuario(); as usuario) {
-      <section class="bienvenida">
-        <p class="etiqueta">PANEL PRINCIPAL</p>
-
-        <h1>Hola, {{ usuario.nombre }}</h1>
-
-        <p class="descripcion">
-          Organiza tus actividades y gestiona tus reservas
-          de laboratorio desde un solo lugar.
+    @if (usuario.rol === 'ADMINISTRADOR') {
+      <a class="tarjeta" routerLink="/usuarios">
+        <span class="numero">03</span>
+        <h2>Usuarios</h2>
+        <p>
+          Administra las cuentas y los datos de los usuarios
+          registrados.
         </p>
+      </a>
+    }
+  </section>
 
-        <span class="rol">
+  <section class="cuenta" aria-labelledby="titulo-cuenta">
+    <div>
+      <h2 id="titulo-cuenta">Tu cuenta</h2>
+      <p>Sesión iniciada correctamente.</p>
+    </div>
+
+    <dl>
+      <div>
+        <dt>Nombre</dt>
+        <dd>{{ usuario.nombre }}</dd>
+      </div>
+      <div>
+        <dt>Código de usuario</dt>
+        <dd>{{ usuario.usuarioId }}</dd>
+      </div>
+      <div>
+        <dt>Perfil</dt>
+        <dd>
           {{ usuario.rol === 'ADMINISTRADOR'
             ? 'Administrador'
             : 'Solicitante' }}
-        </span>
-      </section>
-
-      <section class="modulos" aria-label="Módulos del sistema">
-        <article class="tarjeta">
-          <span class="numero">01</span>
-          <h2>Laboratorios</h2>
-          <p>
-            Consulta los espacios, su ubicación y la capacidad
-            para tus actividades.
-          </p>
-        </article>
-
-        <article class="tarjeta">
-          <span class="numero">02</span>
-          <h2>
-            {{ usuario.rol === 'ADMINISTRADOR'
-              ? 'Reservas'
-              : 'Mis reservas' }}
-          </h2>
-          <p>
-            {{ usuario.rol === 'ADMINISTRADOR'
-              ? 'Revisa las reservas y administra sus estados.'
-              : 'Consulta, registra y actualiza tus propias reservas.' }}
-          </p>
-        </article>
-
-        @if (usuario.rol === 'ADMINISTRADOR') {
-          <article class="tarjeta">
-            <span class="numero">03</span>
-            <h2>Usuarios</h2>
-            <p>
-              Administra las cuentas y los datos de los usuarios
-              registrados.
-            </p>
-          </article>
-        }
-      </section>
-
-      <section class="cuenta" aria-labelledby="titulo-cuenta">
-        <div>
-          <h2 id="titulo-cuenta">Tu cuenta</h2>
-          <p>Sesión iniciada correctamente.</p>
-        </div>
-
-        <dl>
-          <div>
-            <dt>Nombre</dt>
-            <dd>{{ usuario.nombre }}</dd>
-          </div>
-          <div>
-            <dt>Código de usuario</dt>
-            <dd>{{ usuario.usuarioId }}</dd>
-          </div>
-          <div>
-            <dt>Perfil</dt>
-            <dd>
-              {{ usuario.rol === 'ADMINISTRADOR'
-                ? 'Administrador'
-                : 'Solicitante' }}
-            </dd>
-          </div>
-        </dl>
-      </section>
-    }
-  </main>
-
-  <footer>Sistema de reserva de laboratorios</footer>
-</div>
+        </dd>
+      </div>
+    </dl>
+  </section>
+}

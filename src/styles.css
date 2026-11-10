@@ -1,1 +1,293 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos compartidos por las pantallas de gestión (CRUD). */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f3f6fc;
+  color: #172b4d;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Encabezado de cada módulo */
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.encabezado h1 {
+  margin: 6px 0 0;
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+.encabezado p {
+  margin: 6px 0 0;
+  color: #52627a;
+}
+
+.etiqueta-modulo {
+  margin: 0;
+  color: #2458cf;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* Tarjetas */
+.caja {
+  padding: 24px;
+  border: 1px solid #dfe6f1;
+  border-radius: 18px;
+  background: white;
+}
+
+.caja + .caja {
+  margin-top: 24px;
+}
+
+.caja h2 {
+  margin: 0 0 16px;
+  font-size: 19px;
+}
+
+/* Formularios */
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo.ancho {
+  grid-column: 1 / -1;
+}
+
+.campo label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #b9c6d8;
+  border-radius: 10px;
+  background: white;
+  color: inherit;
+  font: inherit;
+}
+
+.campo textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.campo input.invalido,
+.campo select.invalido,
+.campo textarea.invalido {
+  border-color: #c53030;
+}
+
+.campo small {
+  color: #a52424;
+  font-size: 13px;
+}
+
+.casilla {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding-top: 26px;
+}
+
+.casilla input {
+  width: 18px;
+  height: 18px;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  grid-column: 1 / -1;
+}
+
+/* Botones */
+.boton {
+  padding: 11px 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: #2458cf;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boton:hover {
+  background: #1946af;
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.boton.secundario {
+  border-color: #bac9e2;
+  background: white;
+  color: #2458cf;
+}
+
+.boton.secundario:hover {
+  background: #edf3ff;
+}
+
+.boton.peligro {
+  background: #c53030;
+}
+
+.boton.peligro:hover {
+  background: #a52424;
+}
+
+.boton.chico {
+  padding: 6px 11px;
+  font-size: 13px;
+}
+
+.boton:focus-visible,
+.campo input:focus-visible,
+.campo select:focus-visible,
+.campo textarea:focus-visible {
+  outline: 3px solid #88b2ff;
+  outline-offset: 2px;
+}
+
+/* Mensajes */
+.mensaje {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  line-height: 1.5;
+}
+
+.mensaje.error {
+  background: #fff0f0;
+  color: #a52424;
+}
+
+.mensaje.exito {
+  background: #eaf8ef;
+  color: #1d6b3a;
+}
+
+.mensaje.info {
+  background: #edf3ff;
+  color: #1f4aa8;
+}
+
+/* Tablas */
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+th,
+td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #e7ecf4;
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  color: #52627a;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+td.botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vacio {
+  padding: 28px 10px;
+  color: #52627a;
+  text-align: center;
+}
+
+/* Etiquetas de estado */
+.estado {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.estado.PENDIENTE {
+  background: #fff6e0;
+  color: #8a5a00;
+}
+
+.estado.CONFIRMADA,
+.estado.ACTIVO {
+  background: #eaf8ef;
+  color: #1d6b3a;
+}
+
+.estado.CANCELADA,
+.estado.INACTIVO {
+  background: #f1f3f6;
+  color: #5d6878;
+}
+
+/* Filtros */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.filtros .campo {
+  min-width: 180px;
+}
+
+@media (max-width: 600px) {
+  .caja {
+    padding: 18px;
+  }
+
+  th,
+  td {
+    padding: 10px 6px;
+    font-size: 14px;
+  }
+}
